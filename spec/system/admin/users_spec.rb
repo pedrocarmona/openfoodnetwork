@@ -4,6 +4,7 @@ require "system_helper"
 
 describe "Managing users" do
   include AuthenticationHelper
+  include WebHelper
 
   context "as super-admin" do
     before do
@@ -141,8 +142,8 @@ describe "Managing users" do
         fill_in "Password", with: "user1Secret"
         fill_in "Confirm Password", with: "user1Secret"
 
-        expect(page).to have_select "Language", selected: "English"
-        select "Español", from: "Language"
+        expect(page).to have_tomselect("user[locale]", item: "English")
+        tomselect_search_and_select("Español", from: "user[locale]")
 
         perform_enqueued_jobs do
           expect do

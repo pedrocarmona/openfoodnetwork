@@ -86,6 +86,17 @@ module WebHelper
     find(:css, ".select2-result-label", text: options[:select_text] || value).click
   end
 
+  def have_tomselect(field_name, item:)
+    tomselect_wrapper = page.find("[name='#{field_name}']").sibling(".ts-wrapper")
+    within(tomselect_wrapper) do
+      have_selector(
+        :css,
+        ".ts-control .item",
+        text: item
+      )
+    end
+  end
+
   def tomselect_open(field_name)
     page.find("##{field_name}-ts-control").click
   end
