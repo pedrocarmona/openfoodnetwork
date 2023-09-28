@@ -72,4 +72,4 @@
 -# add to admin footer to avoid nesting invitation form inside enterprise form
 - content_for :admin_footer do
   = render HelpModalComponent.new(id: "invite-manager-modal", close_button: false) do
-    = render partial: 'admin/enterprises/form/add_new_unregistered_manager', locals: { error: nil, success: nil }
+    = render partial: 'admin/enterprises/form/add_new_unregistered_manager', locals: { user: Admin::EnterpriseUnregisteredManagerForm.new(enterprise_id: @enterprise.id) }

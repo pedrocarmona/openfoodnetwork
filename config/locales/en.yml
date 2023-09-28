@@ -1011,6 +1011,9 @@ en:
           desc_short_placeholder: Tell us about your enterprise in one or two sentences
           desc_long: About Us
           desc_long_placeholder: Tell customers about yourself. This information appears on your public profile.
+        add_new_unregistered_manager:
+          locale: 'Language'
+          email: 'Email'
         address:
           legend: "Address"
         business_details:

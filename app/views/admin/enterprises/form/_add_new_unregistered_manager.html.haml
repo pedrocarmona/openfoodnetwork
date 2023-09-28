@@ -1,21 +1,28 @@
-%form#add_manager_modal{ 'data-reflex': 'submit->InviteManager#invite', 'data-reflex-serialize-form': true }
-  .margin-bottom-30.text-center
-    .text-big
-      = t('js.admin.modals.invite_title')
+%section#add_manager_modal
+  = form_with(model: user, url: "#", data: { reflex: 'submit->InviteManager#invite' }) do |f|
+    .margin-bottom-30.text-center
+      .text-big
+        = t('js.admin.modals.invite_title')
 
-  - if success
-    %p.alert-box.ok= t('user_invited', email: email)
+    -# - if user.valid?
+      -# %p.alert-box.ok= t('user_invited', email: email)
 
-  - if error
-    %p.alert-box.error= error
+    - if f.object.errors.any?
+      %p.alert-box.error= f.object.errors.full_messages[0]
 
-  = text_field_tag :email, nil, class: 'fullwidth margin-bottom-20'
-  = hidden_field_tag :enterprise_id, @enterprise&.id || enterprise.id
+    = f.field_container :email do
+      = f.label :email, t(".email")
+      = f.email_field :email, class: "fullwidth"
+    = f.field_container :locale, class: ["margin-bottom-20"] do
+      = f.label :locale, t(".locale")
+      = f.select :locale, locale_options, {}, { "data-controller": "tom-select", class: "fullwidth" }
 
-  .modal-actions
-    - if success
-      %input{ class: "button icon-plus secondary", type: 'button', value: t('js.admin.modals.close'), "data-action": "click->help-modal#close" }
-    - else
+    = f.hidden_field :enterprise_id
+
+    .modal-actions
       %input{ class: "button icon-plus secondary", type: 'button', value: t('js.admin.modals.cancel'), "data-action": "click->help-modal#close" }
+      %input{ class: "button icon-plus primary", type: 'button', value: t('js.admin.modals.invite'), "data-action": "click->help-modal#close" }
       = submit_tag "#{t('js.admin.modals.invite')}"
-    
+  %div
+    something else
+

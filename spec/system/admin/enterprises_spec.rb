@@ -555,6 +555,7 @@ describe '
       end
     end
 
+    # fdescribe
     describe "check users tab" do
       before do
         login_as_admin
@@ -570,10 +571,11 @@ describe '
           page.find('a', text: /Add an unregistered user/i).click
         end
 
-        it "shows an error message if the email is invalid" do
-          within ".reveal-modal" do
+        fit "shows an error message if the email is invalid" do
+          within "#invite-manager-modal" do
             expect(page).to have_content "Invite an unregistered user"
-            fill_in "email", with: "invalid_email"
+
+            fill_in "Email", with: "invalid_email"
 
             expect do
               click_button "Invite"

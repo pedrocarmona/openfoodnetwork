@@ -31,6 +31,8 @@ module Admin
 
     include OrderCyclesHelper
 
+    helper I18nHelper
+
     def index
       load_enterprise_set_on_index
 

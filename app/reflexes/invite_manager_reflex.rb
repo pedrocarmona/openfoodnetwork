@@ -1,42 +1,49 @@
 # frozen_string_literal: true
 
 class InviteManagerReflex < ApplicationReflex
-  include ManagerInvitations
-
   def invite
-    email = params[:email]
-    enterprise = Enterprise.find(params[:enterprise_id])
+    authorize! :edit, user_form.enterprise
 
-    authorize! :edit, enterprise
-
-    existing_user = Spree::User.find_by(email: email)
-
-    locals = { error: nil, success: nil, email: email, enterprise: enterprise }
-
-    if existing_user
-      locals[:error] = I18n.t('admin.enterprises.invite_manager.user_already_exists')
-
-      return_morph(locals)
-      return
-    end
-
-    new_user = create_new_manager(email, enterprise)
-
-    if new_user.errors.empty?
-      locals[:success] = true
+    if user_form.save
+      morph("#add_manager_modal", render_with_locale(new_user_form))
+      success("admin.send_invoice_feedback", 1)
     else
-      locals[:error] = new_user.errors.full_messages.to_sentence
+      puts render_with_locale(user_form)
+      puts "########################################################"
+      morph("#add_manager_modal", render_with_locale(user_form))
     end
-
-    return_morph(locals)
   end
 
   private
 
-  def return_morph(locals)
-    morph "#add_manager_modal",
-          with_locale {
-            render(partial: "admin/enterprises/form/add_new_unregistered_manager", locals: locals)
-          }
+  def user_form
+    @user_form ||= Admin::EnterpriseUnregisteredManagerForm.new(user_form_params)
+  end
+
+  def new_user_form
+    Admin::EnterpriseUnregisteredManagerForm.new
+  end
+
+  def user_form_params
+    params.require(:admin_enterprise_unregistered_manager_form).permit(
+      :email,
+      :locale,
+      :enterprise_id
+    )
+  end
+
+  def render_with_locale(user_form)
+    with_locale do
+      render(
+        partial: "admin/enterprises/form/add_new_unregistered_manager",
+        locals: { user: user_form }
+      )
+    end
+  end
+
+  def success(i18n_key, count)
+    flash[:success] = with_locale { I18n.t(i18n_key, count: count) }
+    cable_ready.dispatch_event(name: "modal:close")
+    morph_admin_flashes
   end
 end
